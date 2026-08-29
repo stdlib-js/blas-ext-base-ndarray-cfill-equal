@@ -41,14 +41,32 @@ limitations under the License.
 
 <!-- /.intro -->
 
+<section class="installation">
 
+## Installation
+
+```bash
+npm install @stdlib/blas-ext-base-ndarray-cfill-equal
+```
+
+Alternatively,
+
+-   To load the package in a website via a `script` tag without installation and bundlers, use the [ES Module][es-module] available on the [`esm`][esm-url] branch (see [README][esm-readme]).
+-   If you are using Deno, visit the [`deno`][deno-url] branch (see [README][deno-readme] for usage intructions).
+-   For use in Observable, or in browser/node environments, use the [Universal Module Definition (UMD)][umd] build available on the [`umd`][umd-url] branch (see [README][umd-readme]).
+
+The [branches.md][branches-url] file summarizes the available branches and displays a diagram illustrating their relationships.
+
+To view installation and usage instructions specific to each branch build, be sure to explicitly navigate to the respective README files on each branch, as linked to above.
+
+</section>
 
 <section class="usage">
 
 ## Usage
 
 ```javascript
-import cfillEqual from 'https://cdn.jsdelivr.net/gh/stdlib-js/blas-ext-base-ndarray-cfill-equal@esm/index.mjs';
+var cfillEqual = require( '@stdlib/blas-ext-base-ndarray-cfill-equal' );
 ```
 
 #### cfillEqual( arrays )
@@ -56,9 +74,9 @@ import cfillEqual from 'https://cdn.jsdelivr.net/gh/stdlib-js/blas-ext-base-ndar
 Replaces elements in a one-dimensional single-precision complex floating-point ndarray equal to a provided search element with a specified scalar constant.
 
 ```javascript
-import Complex64Vector from 'https://cdn.jsdelivr.net/gh/stdlib-js/ndarray-vector-complex64@esm/index.mjs';
-import scalar2ndarray from 'https://cdn.jsdelivr.net/gh/stdlib-js/ndarray-from-scalar@esm/index.mjs';
-import Complex64 from 'https://cdn.jsdelivr.net/gh/stdlib-js/complex-float32-ctor@esm/index.mjs';
+var Complex64Vector = require( '@stdlib/ndarray-vector-complex64' );
+var scalar2ndarray = require( '@stdlib/ndarray-from-scalar' );
+var Complex64 = require( '@stdlib/complex-float32-ctor' );
 
 var x = new Complex64Vector( [ 0.0, 0.0, -2.0, 3.0, 0.0, 0.0, 4.0, -6.0 ] );
 
@@ -70,8 +88,16 @@ var alpha = scalar2ndarray( new Complex64( 5.0, 5.0 ), {
     'dtype': 'complex64'
 });
 
-cfillEqual( [ x, searchElement, alpha ] );
-// x => <ndarray>[ <Complex64>[ 5.0, 5.0 ], <Complex64>[ -2.0, 3.0 ], <Complex64>[ 5.0, 5.0 ], <Complex64>[ 4.0, -6.0 ] ]
+var start = scalar2ndarray( 0, {
+    'dtype': 'generic'
+});
+
+var end = scalar2ndarray( 2, {
+    'dtype': 'generic'
+});
+
+cfillEqual( [ x, searchElement, alpha, start, end ] );
+// x => <ndarray>[ <Complex64>[ 5.0, 5.0 ], <Complex64>[ -2.0, 3.0 ], <Complex64>[ 0.0, 0.0 ], <Complex64>[ 4.0, -6.0 ] ]
 ```
 
 The function has the following parameters:
@@ -81,6 +107,8 @@ The function has the following parameters:
     -   a one-dimensional input ndarray.
     -   a zero-dimensional ndarray containing the search element.
     -   a zero-dimensional ndarray containing the scalar constant.
+    -   a zero-dimensional ndarray containing the starting index (inclusive).
+    -   a zero-dimensional ndarray containing the ending index (exclusive).
 
 </section>
 
@@ -91,6 +119,7 @@ The function has the following parameters:
 ## Notes
 
 -   The input ndarray is modified **in-place** (i.e., the input ndarray is **mutated**).
+-   If a specified `start` or `end` index is negative, the function resolves the respective index by counting backward from the last element (where `-1` refers to the last element).
 -   When comparing elements, the function checks for equality of real and imaginary components using the strict equality operator `===`. As a consequence, `NaN` components are considered distinct (i.e., as `NaN === NaN` always evaluates to `false`, elements having one or more `NaN` components are never replaced), and `-0` and `+0` are considered the same.
 
 </section>
@@ -103,19 +132,14 @@ The function has the following parameters:
 
 <!-- eslint no-undef: "error" -->
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<body>
-<script type="module">
-
-import discreteUniform from 'https://cdn.jsdelivr.net/gh/stdlib-js/random-array-discrete-uniform@esm/index.mjs';
-import Complex64Vector from 'https://cdn.jsdelivr.net/gh/stdlib-js/ndarray-vector-complex64@esm/index.mjs';
-import scalar2ndarray from 'https://cdn.jsdelivr.net/gh/stdlib-js/ndarray-from-scalar@esm/index.mjs';
-import ndarray2array from 'https://cdn.jsdelivr.net/gh/stdlib-js/ndarray-to-array@esm/index.mjs';
-import ndarraylike2scalar from 'https://cdn.jsdelivr.net/gh/stdlib-js/ndarray-ndarraylike2scalar@esm/index.mjs';
-import Complex64 from 'https://cdn.jsdelivr.net/gh/stdlib-js/complex-float32-ctor@esm/index.mjs';
-import cfillEqual from 'https://cdn.jsdelivr.net/gh/stdlib-js/blas-ext-base-ndarray-cfill-equal@esm/index.mjs';
+```javascript
+var discreteUniform = require( '@stdlib/random-array-discrete-uniform' );
+var Complex64Vector = require( '@stdlib/ndarray-vector-complex64' );
+var scalar2ndarray = require( '@stdlib/ndarray-from-scalar' );
+var ndarray2array = require( '@stdlib/ndarray-to-array' );
+var ndarraylike2scalar = require( '@stdlib/ndarray-ndarraylike2scalar' );
+var Complex64 = require( '@stdlib/complex-float32-ctor' );
+var cfillEqual = require( '@stdlib/blas-ext-base-ndarray-cfill-equal' );
 
 var opts = {
     'dtype': 'float32'
@@ -134,12 +158,18 @@ var alpha = scalar2ndarray( new Complex64( 5.0, 5.0 ), {
 });
 console.log( 'Alpha:', ndarraylike2scalar( alpha ) );
 
-cfillEqual( [ x, searchElement, alpha ] );
-console.log( ndarray2array( x ) );
+var start = scalar2ndarray( 5, {
+    'dtype': 'generic'
+});
+console.log( 'Start Index:', ndarraylike2scalar( start ) );
 
-</script>
-</body>
-</html>
+var end = scalar2ndarray( 15, {
+    'dtype': 'generic'
+});
+console.log( 'End Index:', ndarraylike2scalar( end ) );
+
+cfillEqual( [ x, searchElement, alpha, start, end ] );
+console.log( ndarray2array( x ) );
 ```
 
 </section>
@@ -163,7 +193,7 @@ console.log( ndarray2array( x ) );
 
 ## Notice
 
-This package is part of [stdlib][stdlib], a standard library with an emphasis on numerical and scientific computing. The library provides a collection of robust, high performance libraries for mathematics, statistics, streams, utilities, and more.
+This package is part of [stdlib][stdlib], a standard library for JavaScript and Node.js, with an emphasis on numerical and scientific computing. The library provides a collection of robust, high performance libraries for mathematics, statistics, streams, utilities, and more.
 
 For more information on the project, filing bug reports and feature requests, and guidance on how to develop [stdlib][stdlib], see the main project [repository][stdlib].
 
