@@ -1,4 +1,4 @@
-/**
+/*
 * @license Apache-2.0
 *
 * Copyright (c) 2026 The Stdlib Authors.
@@ -16,20 +16,12 @@
 * limitations under the License.
 */
 
-'use strict';
+// TypeScript Version: 4.1
 
-// MODULES //
+/// <reference types="https://cdn.jsdelivr.net/gh/stdlib-js/types@esm/index.d.ts"/>
 
-var numelDimension = require( '@stdlib/ndarray-base-numel-dimension' );
-var clipIndex = require( '@stdlib/ndarray-base-clip-index' );
-var getStride = require( '@stdlib/ndarray-base-stride' );
-var getOffset = require( '@stdlib/ndarray-base-offset' );
-var getData = require( '@stdlib/ndarray-base-data-buffer' );
-var ndarraylike2scalar = require( '@stdlib/ndarray-base-ndarraylike2scalar' );
-var strided = require( '@stdlib/blas-ext-base-cfill-equal' ).ndarray;
-
-
-// MAIN //
+import { complex64ndarray, typedndarray } from '@stdlib/types/ndarray';
+import { Complex64 } from '@stdlib/types/complex';
 
 /**
 * Replaces elements in a one-dimensional single-precision complex floating-point ndarray equal to a provided search element with a specified scalar constant.
@@ -46,8 +38,8 @@ var strided = require( '@stdlib/blas-ext-base-cfill-equal' ).ndarray;
 *
 * -   When comparing elements, the function checks for equality of real and imaginary components using the strict equality operator `===`. As a consequence, `NaN` components are considered distinct (i.e., as `NaN === NaN` always evaluates to `false`, elements having one or more `NaN` components are never replaced), and `-0` and `+0` are considered the same.
 *
-* @param {ArrayLikeObject<Object>} arrays - array-like object containing ndarrays
-* @returns {ndarray} input ndarray
+* @param arrays - array-like object containing ndarrays
+* @returns input ndarray
 *
 * @example
 * var Complex64Vector = require( '@stdlib/ndarray-vector-complex64' );
@@ -75,34 +67,9 @@ var strided = require( '@stdlib/blas-ext-base-cfill-equal' ).ndarray;
 * var out = cfillEqual( [ x, searchElement, alpha, start, end ] );
 * // returns <ndarray>[ <Complex64>[ 5.0, 5.0 ], <Complex64>[ -2.0, 3.0 ], <Complex64>[ 0.0, 0.0 ], <Complex64>[ 4.0, -6.0 ] ]
 */
-function cfillEqual( arrays ) {
-	var searchElement;
-	var stride;
-	var offset;
-	var alpha;
-	var start;
-	var end;
-	var N;
-	var x;
-
-	x = arrays[ 0 ];
-	searchElement = ndarraylike2scalar( arrays[ 1 ] );
-	alpha = ndarraylike2scalar( arrays[ 2 ] );
-
-	N = numelDimension( x, 0 );
-	start = clipIndex( ndarraylike2scalar( arrays[ 3 ] ), N );
-	end = clipIndex( ndarraylike2scalar( arrays[ 4 ] ), N );
-	if ( start >= end ) {
-		return x;
-	}
-	stride = getStride( x, 0 );
-	offset = getOffset( x ) + ( stride*start );
-
-	strided( end-start, searchElement, alpha, getData( x ), stride, offset );
-	return x;
-}
+declare function cfillEqual( arrays: [ complex64ndarray, typedndarray<Complex64>, typedndarray<Complex64>, typedndarray<number>, typedndarray<number> ] ): complex64ndarray;
 
 
 // EXPORTS //
 
-module.exports = cfillEqual;
+export = cfillEqual;
